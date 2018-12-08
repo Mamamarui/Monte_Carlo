@@ -1,0 +1,132 @@
+\documentclass[a4paper,12pt]{ctexart}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{float}
+\renewcommand {\figurename}{Fig.} %重定义编号前缀词
+\renewcommand {\thetable} {\thesection{}-\arabic{table}}
+\renewcommand {\thefigure} {\thesection{}-\arabic{figure}}
+\lstset{
+ columns=fixed,       
+ numbers=left,                                        % 在左侧显示行号
+ numberstyle=\tiny\color{gray},                       % 设定行号格式
+}
+\pagestyle{plain}
+\title{伪随机数发生器}
+\author{邵睿智\quad 能动硕8028\quad 3118103277}
+\date{}
+\begin{document}
+\maketitle
+\section{理论模型}
+\subsection{取中同余方法}
+本程序的取中同余方法采用的是乘积取中方法，乘积取中方法的一般形式为：
+\begin{equation}
+x_{i+2}=[10^{-s} \cdot x_i \cdot x_{i+1}] \quad ({\rm mod} \qquad 10^{2s})
+\end{equation}
+\begin{equation}
+\xi_{i+2}=\frac{x_{i+2}}{10^{2s}}
+\end{equation}
+对于初始的两个初值$x_1,x_2$的取值，$x_1$可以由用户指定，$x_2$会采用平方取中方法由$x_1$生成。平方取中方法的一般形式为：
+\begin{equation}
+x_{i+1}=[10^{-s} \cdot x_i^2] \quad ({\rm mod} \qquad 10^{2s}) \\
+\end{equation}
+\begin{equation}
+\xi_{i+1}=\frac{x_{i+1}}{10^{2s}}
+\end{equation}
+
+\subsection{线性同余方法}
+线性同余方法的一般形式是：对任意初始值$x_1$，伪随机数序列由下面递推公式确定：
+\begin{equation}
+x_{i+1}=ax_i+c \quad ({\rm mod} \qquad 2^{2s})
+\end{equation}
+
+\section{程序研发}
+本程序采用python3编写，采用文件输入，支持屏显输出和文件输出两种方式。程序支持指定初值和随机初值两种方式，随机初值由计算机时间的小数部分产生，可以保证其随机性，但是不能保证初值选取的合理性。
+\subsection{程序输入}
+\begin{enumerate}
+\item 乘积取中方法输入文件形式
+\begin{lstlisting}[title=乘积取中方法输入,frame=shadowbox]
+method 1
+number 100
+seed random或数字
+s 5
+\end{lstlisting}
+
+\item 线性同余方法输入文件格式
+\begin{lstlisting}[title=线性同余方法输入,frame=shadowbox]
+method 2
+number 5
+seed random或数字
+A 97
+C 3 
+M 1000
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{程序运行}
+\begin{lstlisting}[title=程序运行指令,frame=shadowbox]
+python random.py input_filename
+\end{lstlisting}
+其中input\_filename为输入文件的文件名。
+
+\section{数值结果}
+\subsection{乘积取中方法}
+使用乘积取中方法，随机数种子给定为1103515245，得到一组随机数序列，如图\ref{Fig.3-1}所示。
+
+\begin{figure}[ht] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+\centering %图片居中
+\includegraphics[width=0.6\textwidth]{mid_ramdom.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+\caption{Mid Random Generator} %最终文档中希望显示的图片标题
+\label{Fig.3-1} %用于文内引用的标签
+\end{figure}
+
+对该随机数序列进行独立性检验，其独立偏度随随机数序列长度变化如图\ref{Fig.3-2}所示。
+
+\begin{figure}[hb] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+\centering %图片居中
+\includegraphics[width=0.6\textwidth]{mid_Independence.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+\caption{Independent Departureness of Random Numbers} %最终文档中希望显示的图片标题
+\label{Fig.3-2} %用于文内引用的标签
+\end{figure}
+
+对该随机数序列进行均匀性检验，其均匀偏度随随机数序列长度变化如图\ref{Fig.3-3}所示。
+
+\begin{figure}[ht] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+\centering %图片居中
+\includegraphics[width=0.6\textwidth]{mid_Undependence.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+\caption{Uniform Departureness of Random Numbers} %最终文档中希望显示的图片标题
+\label{Fig.3-3} %用于文内引用的标签
+\end{figure}
+
+\subsection{线性同余方法}
+使用线性同余方法，随机数种子给定为13、A为1103515245、C为12345、M为$2^{31}-1$，得到一组随机数序列，如图\ref{Fig.3-4}所示。
+
+\begin{figure}[hb] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+\centering %图片居中
+\includegraphics[width=0.6\textwidth]{LCG_ramdom.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+\caption{LCG Random Generator} %最终文档中希望显示的图片标题
+\label{Fig.3-4} %用于文内引用的标签
+\end{figure}
+
+对该随机数序列进行独立性检验，其独立偏度随随机数序列长度变化如图\ref{Fig.3-5}所示。
+
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+\centering %图片居中
+\includegraphics[width=0.6\textwidth]{LCG_Independence.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+\caption{Independent Departureness of Random Numbers} %最终文档中希望显示的图片标题
+\label{Fig.3-5} %用于文内引用的标签
+\end{figure}
+
+对该随机数序列进行均匀性检验，其均匀偏度随随机数序列长度变化如图\ref{Fig.3-6}所示。
+
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+\centering %图片居中
+\includegraphics[width=0.6\textwidth]{LCG_Undependence.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+\caption{Uniform Departureness of Random Numbers} %最终文档中希望显示的图片标题
+\label{Fig.3-6} %用于文内引用的标签
+\end{figure}
+
+\subsection{结果分析}
+从图\ref{Fig.3-2}、图\ref{Fig.3-3}、图\ref{Fig.3-5}、图\ref{Fig.3-6}可以看出随着随机序列数目的增大，随机数序列的独立偏度和均匀偏度均呈现下降趋势。对比两种方法，可以发现线性同余方法得到的独立偏度和均匀偏度的波动小于乘积取中方法。
+
+
+\end{document}
